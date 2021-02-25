@@ -10,5 +10,5 @@ urlpatterns = [
     path('article/33/', uniq_article, name='uniq_article'),
     path('article/<int:article_id>/', article, name='article'),
     path('article/<int:article_id>/<slug:name>', article, name='article_name'),
-    re_path(Cell.codes_regexp(), phone, name='phone'),
+    re_path(Cell.codes_regexp(), phone, name='phone'),  # Catch mobile no
 ]
