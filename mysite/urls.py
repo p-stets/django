@@ -1,7 +1,7 @@
 from django.urls import include, path, re_path
 from myapp.views import index, main_article, uniq_article, article, phone
 
-from helpers import Cell
+from mysite.helpers import Cell
 
 urlpatterns = [
     path('my_url/', include('myapp.urls')),
