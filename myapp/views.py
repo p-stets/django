@@ -1,3 +1,5 @@
+import random
+
 from datetime import datetime
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -14,28 +16,31 @@ def index(request):
     '''
     Setting additional data
     '''
-    my_num = 33
-    my_str = 'some string'
-    my_dict = {"some_key": "some_value"}
-    my_list = ['list_first_item', 'list_second_item', 'list_third_item']
-    my_set = {'set_first_item', 'set_second_item', 'set_third_item'}
-    my_tuple = ('tuple_first_item', 'tuple_second_item', 'tuple_third_item')
-    my_class = MyClass('class string')
+
+    def random_slug_text(min, max):
+        '''
+        Random text to use for random slug
+        '''
+
+        slug_chars = '0123456789abcdefghijklmnopqrstuvwxyz'  # Characters allowed for slug
+        random_slug_text = ''.join(slug_chars[
+            random.randint(0, len(slug_chars) - 1)]
+            for i in range(0, random.randint(min, max))
+        )
+        return random_slug_text
+
+    random_article_id = random.randint(1, 99999)
+
     return render(
         # Passing additional data to use in a django template
-        request,
+        request=request,
         template_name='index.html',
         context={
-            'my_num': my_num,
-            'my_str': my_str,
-            'my_dict': my_dict,
-            'my_list': my_list,
-            'my_set': my_set,
-            'my_tuple': my_tuple,
-            'my_class': my_class,
-            'display_num': True,
             'now': datetime.now(),
-            'value': datetime.now()
+            'value': datetime.now(),
+            'page_title': 'Homepage',
+            'random_article_id': random_article_id,
+            'random_slug_text': random_slug_text(5, 10)
         },
         content_type='text/html',
         status='200'
@@ -47,17 +52,40 @@ def first(request):
 
 
 def main_article(request):
-    return HttpResponse('There will be a list with articles')
+    return render(
+        request,
+        template_name='main_article.html',
+        content_type='text/html',
+        status='200',
+        context={
+            'page_title': 'Main Article'
+        }
+    )
 
 
 def uniq_article(request):
-    return HttpResponse('This is uniq answer for uniq value')
+    return render(
+        request,
+        template_name='unique_article.html',
+        content_type='text/html',
+        status='200'
+    )
 
 
-def article(request, article_id, name=''):
-    return HttpResponse(
-        "This is an article #{}. {}".format(article_id, "Name of this article is {}".format(
-            name) if name else "This is unnamed article"))
+def article(request, article_id, slug_text=''):
+    slug_text = slug_text
+    article_id = article_id
+    return render(
+        request,
+        template_name='article.html',
+        content_type='text/html',
+        status='200',
+        context={
+            'slug_text': slug_text,
+            'article_id': article_id,
+            'page_title': f'Article {article_id}'
+        }
+    )
 
 
 def phone(request, number):
