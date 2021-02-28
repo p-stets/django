@@ -88,9 +88,9 @@ def article(request, article_id, slug_text=''):
     )
 
 
-def phone(request, number):
+def phone(request, phone):
     return HttpResponse(
-        "<h1>Your phone {phone} is OK!!!!</h1>".format(phone=number)
+        f"<h1>Your phone {phone} is OK!!!!</h1>"
     )
 
 
