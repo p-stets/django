@@ -10,5 +10,5 @@ def codes_regexp(codes_list=OPERATOR_CODES, additional_digits_count=7):
     for el in list(enumerate(codes_list[:-1])):
         codes_list[el[0]] = el[1] + '|'
     regex_list = ''.join(x for x in codes_list)
-    phone_regex = f'^0({regex_list})\\d{{{additional_digits_count}}}/$'
+    phone_regex = f'(?P<phone>^0({regex_list})\\d{{{additional_digits_count}}})/$'
     return phone_regex
