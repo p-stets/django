@@ -47,11 +47,17 @@ class Comment(models.Model):
     content = models.TextField(verbose_name='Content')
 
     # A validation to make sure either related_article or related_comment is populated; not both
+    # and that the author is also present
     def clean(self):
         if (self.related_article and self.related_comment) or (not self.related_article and not self.related_comment):
+            connection_error_message = 'The comment should be connected either to article or to comment'
             raise ValidationError({
-                'related_article': ['The comment should be connected either to article or to comment', ],
-                'related_comment': ['The comment should be connected either to article or to comment', ]
+                'related_article': [connection_error_message, ],
+                'related_comment': [connection_error_message, ]
+            })
+        if not self.author:
+            raise ValidationError({
+                'author': ['The author is required', ]
             })
 
     # Fancy name
