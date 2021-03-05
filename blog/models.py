@@ -2,7 +2,9 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.db.models.base import Model
 
-# Create your models here.
+# Generic stuff import
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 
 class BlogUser(models.Model):
@@ -38,26 +40,44 @@ class Comment(models.Model):
 
     author = models.ForeignKey('BlogUser', verbose_name=(
         "Comment author"), on_delete=models.SET_NULL, null=True, blank=True)
-    article = models.ForeignKey('Article', verbose_name=(
-        "Related Article"), on_delete=models.CASCADE)
-    comment = models.ForeignKey(
-        'self', verbose_name='Related Comment', on_delete=models.CASCADE)
+    related_article = models.ForeignKey('Article', verbose_name=(
+        "Related Article"), on_delete=models.CASCADE, null=True, blank=True)
+    related_comment = models.ForeignKey(
+        'self', verbose_name='Related Comment', on_delete=models.CASCADE, null=True, blank=True)
     content = models.TextField(verbose_name='Content')
 
-    def validate_related(self):
-        if (self.article and self.comment) or (not self.article and not self.comment):
-            raise ValidationError(
-                'The comment should be connected either to article or to comment')
+    # A validation to make sure either related_article or related_comment is populated; not both
+    def clean(self):
+        if (self.related_article and self.related_comment) or (not self.related_article and not self.related_comment):
+            raise ValidationError({
+                'related_article': ['The comment should be connected either to article or to comment', ],
+                'related_comment': ['The comment should be connected either to article or to comment', ]
+            })
 
+    # Fancy name
     def __str__(self):
-        return f'{self.author}-{self.id}'
+        return f'{self.author} - {self.id}'
 
 
+# Generic way
 class Like(models.Model):
-    owner = models.ForeignKey(BlogUser, verbose_name='Owner')
+    # Types of likes; either like of dislike
+    LIKE = 1
+    DISLIKE = 2
+
+    TYPES = (
+        (LIKE, 'Like'),
+        (DISLIKE, 'Dislike')
+    )
+
+    type = models.PositiveSmallIntegerField(choices=TYPES, default=LIKE)
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, related_name='activity_logs')
+    object_id = models.BigIntegerField(default=None, null=True)
+    object = GenericForeignKey(ct_field="content_type", fk_field="object_id")
 
 
-# Base comment approach
+# Base comment way
 
 # class CommentLike(models.Model):
 #     owner = models.ForeignKey(BlogUser, verbose_name='Owner')

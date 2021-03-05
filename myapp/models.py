@@ -18,11 +18,10 @@ class Author(models.Model):
 
 class Book(models.Model):
     name = models.CharField(max_length=120)
-    author = models.ManyToManyField(Author, null=True)
+    author = models.ManyToManyField(Author, blank=True)
     reader = models.ForeignKey('BookUser', null=True, blank=True, on_delete=models.PROTECT)
 
 
 class BookUser(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-
