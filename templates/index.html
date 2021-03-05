@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load tz %}
+
+{% block content %}
+<h3>Current date is:</h3>
+<div>{{ now|date:"D d M Y" }}</div>
+<h3>Time:</h3>
+<div>{{ value|timezone:"Europe/Kiev" }}</div>
+
+<div style="padding: 10px">
+    <a href="{% url 'main_article' %}{{random_article_id}}/">Random article</a>
+</div>
+<div style="padding: 10px">
+    <a href="{% url 'main_article' %}{{random_article_id}}/{{random_slug_text}}/">Random article with random slug</a>
+</div>
+{% endblock %}
